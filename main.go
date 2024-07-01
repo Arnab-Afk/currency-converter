@@ -17,13 +17,13 @@ type ExchangeRates struct {
 func fetchRates() (ExchangeRates, error) {
 	resp, err := http.Get(apiURL)
 	if err != nil {
-		return ExchangeRates{}, err
+		return ExchangeRates{}, fmt.Errorf("failed to fetch exchange rates: %w", err)
 	}
 	defer resp.Body.Close()
 
 	var rates ExchangeRates
 	if err := json.NewDecoder(resp.Body).Decode(&rates); err != nil {
-		return ExchangeRates{}, err
+		return ExchangeRates{}, fmt.Errorf("failed to decode exchange rates: %w", err)
 	}
 
 	return rates, nil
@@ -60,13 +60,13 @@ func main() {
 
 	rates, err := fetchRates()
 	if err != nil {
-		fmt.Printf("Failed to fetch exchange rates: %s\n", err)
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 
 	result, err := convert(amount, fromCurrency, toCurrency, rates)
 	if err != nil {
-		fmt.Printf("Failed to convert currency: %s\n", err)
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
 
